@@ -1,26 +1,33 @@
 package com.example.nodemcu_v1
 
+
+import android.os.AsyncTask
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.widget.EditText
-import android.widget.SeekBar
-import android.widget.TextView
+import android.view.MotionEvent
+import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 private const val TAG = "MainActivity"
-private const val INITIAL_TIP_PERCENT = 10
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var etBaseAmount: EditText
-    private lateinit var seekBarTip: SeekBar
-    private lateinit var tvTipPercentLabel: TextView
-    private lateinit var tvTipAmount: TextView
-    private lateinit var tvTotalAmount: TextView
+    private lateinit var btnForward: View
+    private lateinit var btnBackward: View
+    private lateinit var btnLeft: View
+    private lateinit var btnRight: View
+
+//    private lateinit var socket: Socket
+//    private lateinit var outputStream: OutputStream
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,58 +38,133 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // binding variables to resources
-        etBaseAmount = findViewById(R.id.etBaseAmount)
-        seekBarTip = findViewById(R.id.seekBarTip)
-        tvTipPercentLabel = findViewById(R.id.tvTipPercentLabel)
-        tvTipAmount = findViewById(R.id.tvTipAmount)
-        tvTotalAmount = findViewById(R.id.tvTotalAmount)
 
-        // setting resources
-        seekBarTip.progress = INITIAL_TIP_PERCENT
-        tvTipPercentLabel.text = "$INITIAL_TIP_PERCENT%"
+        btnForward = findViewById(R.id.btn_forward)
+        btnBackward = findViewById(R.id.btn_forward)
+        btnLeft = findViewById(R.id.btn_forward)
+        btnRight = findViewById(R.id.btn_forward)
 
-        // handling listeners
-        etBaseAmount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//        // initialize socket and output stream
+//        try {
+//            socket = Socket("192.168.4.1", 80) // Replace with your NodeMCU IP and port
+//            outputStream = socket.getOutputStream()
+//            Log.i(TAG, "outputstream=======>$outputStream")
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//            Toast.makeText(this@MainActivity, "Failed to connect to NodeMCU", Toast.LENGTH_SHORT)
+//                .show()
+//        }
+
+
+        setOnTouchListener(btnForward, "F", "S")
+        setOnTouchListener(btnBackward, "B", "S")
+        setOnTouchListener(btnLeft, "L", "S")
+        setOnTouchListener(btnRight, "R", "S")
+    }
+
+    private fun setOnTouchListener(btnView: View, beginCommand: String, stopCommand: String) {
+        btnView.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        // On hold - Send forward command
+                        sendCommand(beginCommand)
+                        Log.i("MAIN", "action=========>begin")
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        // Release - Stop the car
+                        sendCommand(stopCommand)
+                        Log.i("MAIN", "action==========>release")
+                    }
+                }
+                return true
             }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                computeTipAndTotal()
-            }
-        })
-
-        seekBarTip.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                Log.i(TAG, "onProgressChanged $progress")
-                tvTipPercentLabel.text = "$progress%"
-                computeTipAndTotal()
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
-
         })
     }
 
-    private fun computeTipAndTotal() {
-        if (etBaseAmount.text.isEmpty()) {
-            tvTipAmount.text = ""
-            tvTotalAmount.text = ""
-            return
+    private fun sendCommand(command: String) {
+        AsyncTask.execute {
+            try {
+                // Create a URL object with the endpoint you want to send the GET request to
+                val url = URL("http://")
+
+                // Open HttpURLConnection
+                val connection = url.openConnection() as HttpURLConnection
+
+                // Set request method to GET
+                connection.requestMethod = "GET"
+
+                // Read the response
+                val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                var line: String?
+                val response = StringBuilder()
+
+                while (reader.readLine().also { line = it } != null) {
+                    response.append(line)
+                }
+                reader.close()
+
+                // Print the response
+                println("Response: ${response.toString()}")
+
+                // Close the connection
+                connection.disconnect()
+
+//                outputStream.write(command.toByteArray())
+//                outputStream.flush()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "Failed to send command", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
         }
-        val baseAmount = etBaseAmount.text.toString().toDouble()
-        val tipPer = seekBarTip.progress.toDouble()
-        val tipAmount = baseAmount * tipPer / 100
-        val totalAmount =  baseAmount + tipAmount
-
-        tvTipAmount.text = "%.2f".format(tipAmount)
-        tvTotalAmount.text = "%.2f".format(totalAmount)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+//            socket.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+//    private fun executeCommand(command: String) {
+//        SendCommandTask().execute(command)
+//    }
+//
+//    private inner class SendCommandTask : AsyncTask<String, Void, Boolean>() {
+//        override fun doInBackground(vararg params: String): Boolean {
+//            val command = params[0]
+//            Log.i("main", "command======>$command")
+//            try {
+//                val url = URL("http://192.168.4.1/")
+//                val connection = url.openConnection() as HttpURLConnection
+//                connection.requestMethod = "POST"
+//                connection.doOutput = true
+//                val outputStream: OutputStream = connection.outputStream
+//                outputStream.write(command.toByteArray())
+//                outputStream.flush()
+//                outputStream.close()
+//                val responseCode = connection.responseCode
+//                return responseCode == HttpURLConnection.HTTP_OK
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//            return false
+//        }
+//
+//        override fun onPostExecute(result: Boolean) {
+//            if (result) {
+//                Toast.makeText(applicationContext, "Command sent successfully", Toast.LENGTH_SHORT)
+//                    .show()
+//            } else {
+//                Toast.makeText(applicationContext, "Failed to send command", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
+//        }
+//    }
 }

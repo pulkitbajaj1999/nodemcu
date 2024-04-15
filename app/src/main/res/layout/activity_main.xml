@@ -7,99 +7,50 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvBaseLabel"
+    <Button
+        android:id="@+id/btn_forward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="50dp"
-        android:text="Base"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/ic_arrow_up"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvTipPercentLabel"
-        android:layout_width="39dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="40dp"
-        android:text="24%"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/tvBaseLabel"
+    <Button
+        android:id="@+id/btn_backward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="112dp"
+        android:background="@drawable/ic_arrow_down"
+        app:layout_constraintEnd_toEndOf="@+id/btn_forward"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvBaseLabel" />
+        app:layout_constraintStart_toStartOf="@+id/btn_forward"
+        app:layout_constraintTop_toBottomOf="@+id/btn_forward" />
 
-    <TextView
-        android:id="@+id/tvTipLabel"
-        android:layout_width="34dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="72dp"
-        android:layout_marginTop="32dp"
-        android:text="Tip"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="@+id/tvTipPercentLabel"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTipPercentLabel" />
-
-    <TextView
-        android:id="@+id/tvTotalLabel"
-        android:layout_width="66dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="24dp"
-        android:text="Total"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="@+id/tvTipLabel"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTipLabel" />
-
-    <EditText
-        android:id="@+id/etBaseAmount"
+    <Button
+        android:id="@+id/btn_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:ems="8"
-        android:hint="Bill Amount"
-        android:inputType="numberDecimal"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvBaseLabel"
-        app:layout_constraintStart_toEndOf="@+id/tvBaseLabel"
-        app:layout_constraintTop_toTopOf="@+id/tvBaseLabel"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/ic_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_forward" />
 
-        app:layout_constraintVertical_bias="0.551" />
-
-    <SeekBar
-        android:id="@+id/seekBarTip"
-        android:layout_width="200dp"
-        android:layout_height="22dp"
-        android:max="30"
-        app:layout_constraintBottom_toBottomOf="@+id/tvTipPercentLabel"
-        app:layout_constraintStart_toStartOf="@+id/etBaseAmount"
-        app:layout_constraintTop_toTopOf="@+id/tvTipPercentLabel" />
-
-    <TextView
-        android:id="@+id/tvTipAmount"
+    <Button
+        android:id="@+id/btn_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="19.97"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="@+id/tvTipLabel"
-        app:layout_constraintStart_toStartOf="@+id/seekBarTip"
-        app:layout_constraintTop_toTopOf="@+id/tvTipLabel" />
+        android:layout_marginEnd="76dp"
+        android:background="@drawable/ic_arrow_right"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_left"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_left"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/tvTotalAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="103.11"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="@+id/tvTotalLabel"
-        app:layout_constraintStart_toStartOf="@+id/tvTipAmount"
-        app:layout_constraintTop_toTopOf="@+id/tvTotalLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
